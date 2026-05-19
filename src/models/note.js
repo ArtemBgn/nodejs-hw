@@ -21,7 +21,7 @@ const noteSchema = new Schema(
       default: 'Todo',
     },
   },
-  { timestamps: true },
+  { versionKey: false, timestamps: true },
 );
 
 export const Note = model('Note', noteSchema);

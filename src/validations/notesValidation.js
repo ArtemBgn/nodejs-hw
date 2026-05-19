@@ -1,5 +1,5 @@
 import { Joi, Segments } from 'celebrate';
-import { TAGS } from '../constants/tags';
+import { TAGS } from '../constants/tags.js';
 import { isValidObjectId } from 'mongoose';
 
 const objectIdValidator = (value, helpers) => {
@@ -8,15 +8,15 @@ const objectIdValidator = (value, helpers) => {
 
 export const getAllNotesSchema = {
   [Segments.QUERY]: Joi.object({
-    page: Joi.number().min(1).default(1).required(),
-    perPage: Joi.number().min(5).max(20).default(10).required(),
+    page: Joi.number().min(1).default(1), //.required(),
+    perPage: Joi.number().min(5).max(20).default(10), //.required(),
     tag: Joi.string().valid(...TAGS),
-    search: Joi.string().allow('').required(),
+    search: Joi.string().allow(''), //.required(),
   }),
 };
 export const noteIdSchema = {
   [Segments.PARAMS]: Joi.object({
-    id: Joi.string().custom(objectIdValidator).required(),
+    noteId: Joi.string().custom(objectIdValidator).required(),
   }),
 };
 
@@ -30,7 +30,7 @@ export const createNoteSchema = {
 };
 export const updateNoteSchema = {
   [Segments.PARAMS]: Joi.object({
-    id: Joi.string().custom(objectIdValidator).required(),
+    noteId: Joi.string().custom(objectIdValidator).required(),
   }),
   [Segments.BODY]: Joi.object({
     title: Joi.string().min(1),
