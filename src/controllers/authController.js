@@ -1,59 +1,71 @@
 import createHttpError from 'http-errors';
 import { User } from '../models/user.js';
+import { Session } from '../models/session.js';
+import { createSession, setSessionCookies } from '../services/auth.js';
+import bcrypt from 'bcrypt';
+// import crypto from 'crypto';
 
-/*
-export const getAllNotes = async (req, res) => {
-  const { page = 1, perPage = 10, tag, search } = req.query;
-  const skip = (page - 1) * perPage;
-  const notesQuery = Note.find();
-  if (tag) notesQuery.where('tag').equals(tag);
-  if (search) {
-    notesQuery.where({
-      $or: [
-        { title: { $regex: search, $options: 'i' } },
-        { content: { $regex: search, $options: 'i' } },
-      ],
-    });
-  }
-  const [totalNotes, notes] = await Promise.all([
-    notesQuery.clone().countDocuments(),
-    notesQuery.skip(skip).limit(perPage),
-  ]);
-  const totalPages = Math.ceil(totalNotes / perPage);
-  res.status(200).json({ page, perPage, totalNotes, totalPages, notes });
-};*/
+export const registerUser = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (user) throw createHttpError(400, 'Email in use');
 
-export const getNoteById = async (req, res) => {
-  const { userId } = req.params;
-  const user = await User.findById(userId);
+  const hashPassword = await bcrypt.hash(password, 10);
 
-  if (!user) {
-    throw createHttpError(404, 'Email in use');
-  }
-  res.status(201).json(user);
-};
-/*
-export const createNote = async (req, res) => {
-  const note = await Note.create(req.body);
-  res.status(201).json(note);
-};
-/*
-export const updateNote = async (req, res) => {
-  const { noteId } = req.params;
-  const note = await Note.findOneAndUpdate({ _id: noteId }, req.body, {
-    returnDocument: 'after',
+  const newUser = await User.create({
+    ...req.body,
+    password: hashPassword,
   });
-  if (!note) {
-    throw createHttpError(404, 'Note not found');
-  }
-  res.status(200).json(note);
+
+  const session = await createSession(newUser._id);
+  setSessionCookies(res, session);
+
+  res.status(201).json(newUser);
 };
-/*
-export const deleteNote = async (req, res) => {
-  const { noteId } = req.params;
-  const note = await Note.findOneAndDelete({ _id: noteId });
-  if (!note) {
-    throw createHttpError(404, 'Note not found');
-  }
-  res.status(200).json(note);
-};*/
+
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) throw createHttpError(401, 'Invalid credentials');
+
+  const isValidPassword = await bcrypt.compare(password, user.password);
+  if (!isValidPassword) throw createHttpError(401, 'Invalid credentials');
+
+  await Session.deleteOne({ userId: user._id });
+
+  const session = await createSession(user._id);
+  setSessionCookies(res, session);
+
+  res.status(200).json(user);
+};
+
+export const refreshUserSession = async (req, res) => {
+  const { sessionId } = req.cookies;
+  const session = await Session.findOne({
+    _id: sessionId,
+  });
+
+  if (!session) throw createHttpError(401, 'Session not found');
+  if (session.refreshTokenValidUntil < new Date())
+    throw createHttpError(401, 'Session token expired');
+
+  await Session.deleteOne({ _id: sessionId });
+  const newSession = await createSession(session.userId);
+  setSessionCookies(res, newSession);
+
+  res.status(200).json({
+    message: 'Session refreshed',
+  });
+};
+
+export const logoutUser = async (req, res) => {
+  const { sessionId } = req.cookies;
+  if (sessionId) await Session.deleteOne({ _id: sessionId });
+
+  res.clearCookie('sessionId');
+  res.clearCookie('accessToken');
+  res.clearCookie('refreshToken');
+
+  res.status(204).send();
+};

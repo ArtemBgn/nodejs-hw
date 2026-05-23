@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
 import { model } from 'mongoose';
-import { emailRegexp } from '../constants/tags';
+import { emailRegex } from '../constants/tags';
 
 const userSchema = new Schema(
   {
@@ -12,7 +12,7 @@ const userSchema = new Schema(
       type: String,
       trim: true,
       unique: true,
-      match: emailRegexp,
+      match: emailRegex,
       required: true,
     },
     password: {

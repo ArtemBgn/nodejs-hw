@@ -1,27 +1,21 @@
 import { Router } from 'express';
-/*import {
-  getAllNotes,
-  getNoteById,
-  createNote,
-  updateNote,
-  deleteNote,
-} from '../controllers/notesController.js';*/
 import { celebrate } from 'celebrate';
-/*import {
-  getAllNotesSchema,
-  noteIdSchema,
-  createNoteSchema,
-  updateNoteSchema,
-} from '../validations/notesValidation.js';*/
+import {
+  loginUserSchema,
+  registerUserSchema,
+} from '../validations/authValidation';
+import {
+  loginUser,
+  logoutUser,
+  refreshUserSession,
+  registerUser,
+} from '../controllers/authController';
 
 const router = Router();
 
-// router.get('/notes', celebrate(), () => {});
-// router.get('/notes/:noteId', celebrate(), () => {});
-
-router.post('/auth/register', celebrate(), () => {});
-
-// router.patch('/notes/:noteId', celebrate(), () => {});
-// router.delete('/notes/:noteId', celebrate(), () => {});
+router.post('/auth/register', celebrate(registerUserSchema), registerUser);
+router.post('/auth/login', celebrate(loginUserSchema), loginUser);
+router.post('/auth/refresh', refreshUserSession);
+router.post('/auth/logout', logoutUser);
 
 export default router;
