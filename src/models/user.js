@@ -1,5 +1,6 @@
 import { Schema } from 'mongoose';
 import { model } from 'mongoose';
+import { emailRegexp } from '../constants/tags';
 
 const userSchema = new Schema(
   {
@@ -10,15 +11,36 @@ const userSchema = new Schema(
     email: {
       type: String,
       trim: true,
+      unique: true,
+      match: emailRegexp,
       required: true,
     },
     password: {
       type: String,
+      minLength: 8,
       required: true,
     },
   },
   { versionKey: false, timestamps: true },
 );
+
+userSchema.pre('save', function () {
+  if (!this.username) {
+    this.username = this.email;
+  }
+});
+
+userSchema.methods.toJSON = function () {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
+};
+
+userSchema.pre('save', function () {
+  if (!this.username) {
+    this.username = this.email;
+  }
+});
 
 // userSchema.index({ email: 1 });
 
