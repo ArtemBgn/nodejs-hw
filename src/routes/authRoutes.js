@@ -3,13 +3,13 @@ import { celebrate } from 'celebrate';
 import {
   loginUserSchema,
   registerUserSchema,
-} from '../validations/authValidation';
+} from '../validations/authValidation.js';
 import {
   loginUser,
   logoutUser,
   refreshUserSession,
   registerUser,
-} from '../controllers/authController';
+} from '../controllers/authController.js';
 
 const router = Router();
 

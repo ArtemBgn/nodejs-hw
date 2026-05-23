@@ -1,5 +1,5 @@
 import { Joi, Segments } from 'celebrate';
-import { emailRegex } from '../constants/tags';
+import { emailRegex } from '../constants/tags.js';
 
 export const registerUserSchema = {
   [Segments.BODY]: Joi.object({
@@ -15,24 +15,3 @@ export const loginUserSchema = {
     password: Joi.string().min(8).required(),
   }),
 };
-/*new Schema(
-  {
-    username: {
-      type: String,
-      trim: true,
-    },
-    email: {
-      type: String,
-      trim: true,
-      unique: true,
-      match: emailRegexp,
-      required: true,
-    },
-    password: {
-      type: String,
-      minLength: 8,
-      required: true,
-    },
-  },
-  { versionKey: false, timestamps: true },
-);*/

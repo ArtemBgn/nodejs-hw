@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
 import { model } from 'mongoose';
-import { emailRegex } from '../constants/tags';
+import { emailRegex } from '../constants/tags.js';
 
 const userSchema = new Schema(
   {
