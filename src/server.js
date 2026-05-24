@@ -10,7 +10,6 @@ import { errorHandler } from './middleware/errorHandler.js';
 
 import notesRoutes from './routes/notesRoutes.js';
 import authRoutes from './routes/authRoutes.js';
-import { authenticate } from './middleware/authenticate.js';
 
 const app = express();
 const port = Number(process.env.PORT) || 3000;
@@ -20,7 +19,6 @@ app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
-app.use('/notes', authenticate);
 app.use(authRoutes);
 app.use(notesRoutes);
 
