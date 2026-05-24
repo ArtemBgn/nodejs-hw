@@ -3,7 +3,6 @@ import { User } from '../models/user.js';
 import { Session } from '../models/session.js';
 import { createSession, setSessionCookies } from '../services/auth.js';
 import bcrypt from 'bcrypt';
-// import crypto from 'crypto';
 
 export const registerUser = async (req, res) => {
   const { email, password } = req.body;
