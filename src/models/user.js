@@ -36,12 +36,4 @@ userSchema.methods.toJSON = function () {
   return obj;
 };
 
-userSchema.pre('save', function () {
-  if (!this.username) {
-    this.username = this.email;
-  }
-});
-
-// userSchema.index({ email: 1 });
-
 export const User = model('User', userSchema);
