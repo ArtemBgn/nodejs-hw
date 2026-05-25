@@ -125,3 +125,13 @@ export const requestResetEmail = async (req, res) => {
 
   res.status(200).json({ message: 'Password reset email sent successfully' });
 };
+
+export const resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+  if (!token) throw createHttpError(401, 'Invalid or expired token');
+  const { user } = token;
+  if (!user) throw createHttpError(404, `${password} User not found`);
+  return {
+    message: 'Password reset successfully',
+  };
+};
