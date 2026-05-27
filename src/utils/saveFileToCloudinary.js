@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
+import { Readable } from 'stream';
 
 cloudinary.config({
   secure: true,
@@ -7,13 +8,12 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function saveFileToCloudinary(buffer, userId) {
+export async function saveFileToCloudinary(buffer) {
   const options = {
     folder: 'users-app/avatars',
-    public_id: `avatar_${userId}`,
+    unique_filename: true,
     resource_type: 'image',
     overwrite: true,
-    unique_filename: false,
     transformation: [
       { width: 500, height: 500, crop: 'fill', gravity: 'auto' },
       { fetch_format: 'auto', quality: 'auto' },
@@ -28,6 +28,7 @@ export async function saveFileToCloudinary(buffer, userId) {
         resolve(result);
       },
     );
-    uploadStream.end(buffer);
+    const readableStream = Readable.from(buffer);
+    readableStream.pipe(uploadStream);
   });
 }
