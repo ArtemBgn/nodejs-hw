@@ -12,5 +12,6 @@ export const updateUserAvatar = async (req, res, next) => {
     { avatar: result.secure_url },
     { returnDocument: 'after' },
   );
+  console.log('🚀 ~ updateUserAvatar ~ updatedUser:', updatedUser);
   res.status(200).json({ url: user.avatar });
 };
