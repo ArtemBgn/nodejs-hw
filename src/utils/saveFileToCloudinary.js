@@ -8,10 +8,11 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function saveFileToCloudinary(buffer) {
+export async function saveFileToCloudinary(buffer, userId) {
   const options = {
     folder: 'users-app/avatars',
-    unique_filename: true,
+    public_id: `avatar_${userId}`,
+    unique_filename: false,
     resource_type: 'image',
     overwrite: true,
     transformation: [
